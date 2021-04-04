@@ -1,3 +1,5 @@
 board
 dataset
 save_model
+temp
+__pycache__
