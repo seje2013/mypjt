@@ -7,10 +7,14 @@ import seaborn as sns
 import math
 
 def plot_hist(input):
-    tensor = input.clone().cpu().detach().flatten()
-    print(tensor.size())
-    plt.hist(tensor.numpy(), bins=30)
-    plt.hist(tensor.numpy(), bins=30)
+    input = input.clone().cpu().detach().flatten().numpy()
+    min = input.min()
+    max = input.max()
+    mean = input.mean()
+    std = input.std()
+    fig = plt.figure()
+    plt.hist(input, rwidth=0.5)
+    plt.title(f'min:{min:.2f} | max:{max:.2f} | mean:{mean:.2f} | std:{std:.2f}')
     plt.show()
 
 def plot_multi_layer_dist(input_dict, qbit, title):
