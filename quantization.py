@@ -9,10 +9,11 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.tensorboard import SummaryWriter
 
-import dataset
 import model
-import utils
-import post_training_quantization
+from libs import dataset
+from libs import dataset
+from libs import utils
+from libs import ptq
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset',        default='cifar100', help='cifar10|cifar100')
@@ -42,11 +43,11 @@ model.load_state_dict(state_dict['model'])
 if args.bn_fuse:
     model = utils.fuse_bn_recursively(model)
 if args.quantize:
-    model = post_training_quantization.weight_ptq(model, args.qbit)
+    model = ptq.weight_ptq(model, args.qbit)
 
     calib_data, _ = iter(test_loader).next()
     calib_data = calib_data.cuda()
-    model = post_training_quantization.activation_ptq(model, args.qbit, calib_data)
+    model = ptq.activation_ptq(model, args.qbit, calib_data)
     
 model.eval()
 total = 0
@@ -72,7 +73,7 @@ if args.distribution:
     activation = {}
     act_num = 0
     for name, module in model.named_modules():
-        if isinstance(module, post_training_quantization.QReLU):
+        if isinstance(module, ptq.QReLU):
             handle = module.register_forward_hook(utils.get_activation(activation, act_num))
             act_num += 1
     data, target = iter(test_loader).next()
