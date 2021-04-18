@@ -15,7 +15,7 @@ def get_cifar10(batch_size, num_workers=4):
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             ])
-        ), batch_size=batch_size, shuffle=True
+        ), batch_size=batch_size, shuffle=True, pin_memory=True
     )
     test_loader = DataLoader(
         datasets.CIFAR100(
@@ -24,7 +24,7 @@ def get_cifar10(batch_size, num_workers=4):
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             ])
-        ), batch_size=batch_size, shuffle=False
+        ), batch_size=batch_size, shuffle=False, pin_memory=True
     )
     return train_loader, test_loader
 
@@ -41,7 +41,7 @@ def get_cifar100(batch_size, num_workers=4):
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             ])
-        ), batch_size=batch_size, shuffle=True
+        ), batch_size=batch_size, shuffle=True, pin_memory=True
     )
     test_loader = DataLoader(
         datasets.CIFAR100(
@@ -50,7 +50,7 @@ def get_cifar100(batch_size, num_workers=4):
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             ])
-        ), batch_size=batch_size, shuffle=False,
+        ), batch_size=batch_size, shuffle=False, pin_memory=True
     )
     return train_loader, test_loader
 

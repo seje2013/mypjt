@@ -12,7 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 import dataset
 import model
 import utils
-import post_training_quantization
+import ptq
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset',        default='cifar100', help='cifar10|cifar100')
@@ -22,7 +22,7 @@ parser.add_argument('--quantize',       default=True, type=bool, help='Quantize 
 parser.add_argument('--qbit',           default=8, type=int, help='Quantization Precision')
 parser.add_argument('--bn_fuse',        default=True, type=bool, help='fuse batch norm layer')
 parser.add_argument('--batch_size',     default=128, type=int, help='input batch size for calibration (default: 64)')
-parser.add_argument('--distribution',   default=False, type=bool, help='visualize distribution')
+parser.add_argument('--distribution',   default=True, type=bool, help='visualize distribution')
 
 args = parser.parse_args()
 args.cuda = torch.cuda.is_available()
@@ -42,11 +42,11 @@ model.load_state_dict(state_dict['model'])
 if args.bn_fuse:
     model = utils.fuse_bn_recursively(model)
 if args.quantize:
-    model = post_training_quantization.weight_ptq(model, args.qbit)
+    model = ptq.weight_ptq(model, args.qbit)
 
     calib_data, _ = iter(test_loader).next()
     calib_data = calib_data.cuda()
-    model = post_training_quantization.activation_ptq(model, args.qbit, calib_data)
+    model = ptq.activation_ptq(model, args.qbit, calib_data)
     
 model.eval()
 total = 0
@@ -72,7 +72,7 @@ if args.distribution:
     activation = {}
     act_num = 0
     for name, module in model.named_modules():
-        if isinstance(module, post_training_quantization.QReLU):
+        if isinstance(module, ptq.QReLU):
             handle = module.register_forward_hook(utils.get_activation(activation, act_num))
             act_num += 1
     data, target = iter(test_loader).next()

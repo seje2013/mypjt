@@ -56,7 +56,7 @@ def calibration(data, layer_num, qbit):
         calib_idx = 0
         idx = 0
         #for j in range(int(len(input)/500)):
-        for j in range(500):
+        for j in range(1):
             temp = input.clone()
             temp_threshold = temp[calib_idx]
             temp[0:calib_idx] = temp_threshold
